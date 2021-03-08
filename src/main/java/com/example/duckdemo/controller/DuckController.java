@@ -10,9 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +57,7 @@ public class DuckController {
 	
 	// localhost:8080/duck/3
 	@GetMapping("/{id}")
-	public ResponseEntity<Duck> getDuckById(@PathVariable("id") int id) {
+	public ResponseEntity<Duck> getDuckById(@PathVariable("id") int id) throws Exception {
 		Duck duck = duckService.readById(id);
 		
 		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
@@ -63,7 +65,7 @@ public class DuckController {
 	
 	// localhost:8080/duck/alt?id=1
 	@GetMapping("/alt")
-	public ResponseEntity<Duck> getDuckByIdAlt(@PathParam("id") int id) {
+	public ResponseEntity<Duck> getDuckByIdAlt(@PathParam("id") int id) throws Exception {
 		Duck duck = duckService.readById(id);
 		
 		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
@@ -79,10 +81,20 @@ public class DuckController {
 		return new ResponseEntity<Duck>(duck, headers, HttpStatus.CREATED);
 	}
 	
-	// Update duck method
+	@PutMapping("/{id}")
+	public ResponseEntity<Duck> updateDuck(@PathVariable("id") int id,
+										   @RequestBody Duck duck) {
+		Duck updatedDuck = duckService.updateDuck(id, duck);
+		
+		return new ResponseEntity<Duck>(updatedDuck, HttpStatus.OK);
+	}
 	
-	
-	// Delete duck method
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteDuck(@PathVariable("id") int id) {
+		duckService.deleteDuck(id);
+		
+		return new ResponseEntity<String>("Duck deleted", HttpStatus.OK);
+	}
 	
 	// @GetMapping (retrieving something)
 	// @PostMapping (creating something)

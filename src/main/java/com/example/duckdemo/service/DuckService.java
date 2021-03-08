@@ -2,35 +2,54 @@ package com.example.duckdemo.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.example.duckdemo.data.model.Duck;
+import com.example.duckdemo.data.repository.DuckRepository;
 
 @Service // labelled as a bean (managed by Spring)
 public class DuckService {
 	
-	private List<Duck> ducks = new ArrayList<Duck>(
-					List.of(new Duck(0, "Bob", "Red", "Pond", 3),
-							new Duck(1, "Fred", "Green", "Pond", 5)));
+	// Data Access Object
+	private DuckRepository duckRepository;
+	
+	@Autowired
+	public DuckService(DuckRepository duckRepository) {
+		this.duckRepository = duckRepository;
+	}
 
 	public List<Duck> readAllDucks() {
+		List<Duck> ducks = duckRepository.findAll();
 		return ducks;
 	}
 	
-	public Duck readById(int id) {
-		return ducks.get(id);
+	public Duck readById(int id) throws Exception {
+		Optional<Duck> duck = duckRepository.findById(id);
+		
+		if (duck.isPresent()) {
+			return duck.get();
+		} else {
+			throw new Exception("Duck not found");
+		}
 	}
 	
 	public Duck createDuck(Duck duck) {
-		duck.setId(ducks.size());
-		ducks.add(duck);
-		return duck;
+		Duck newDuck = duckRepository.save(duck);
+		
+		return newDuck;
 	}
 	
-	// Update duck
+	public Duck updateDuck(int id, Duck duck) {
+
+		return null;
+	}
 	
+	public void deleteDuck(int id) {
+
+	}
 	
-	// Delete duck
 }
