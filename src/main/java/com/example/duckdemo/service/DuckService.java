@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -27,13 +29,13 @@ public class DuckService {
 		return ducks;
 	}
 	
-	public Duck readById(int id) throws Exception {
+	public Duck readById(Integer id) throws EntityNotFoundException {
 		Optional<Duck> duck = duckRepository.findById(id);
 		
 		if (duck.isPresent()) {
 			return duck.get();
 		} else {
-			throw new Exception("Duck not found");
+			throw new EntityNotFoundException("Duck not found");
 		}
 	}
 	
@@ -43,13 +45,24 @@ public class DuckService {
 		return newDuck;
 	}
 	
-	public Duck updateDuck(int id, Duck duck) {
-
-		return null;
+	public Duck updateDuck(Integer id, Duck duck) throws EntityNotFoundException {
+		Duck duckInDb = readById(id);
+		
+		duckInDb.setName(duck.getName());
+		duckInDb.setAge(duck.getAge());
+		duckInDb.setHabitat(duck.getHabitat());
+		duckInDb.setColour(duck.getColour());
+		
+		Duck updatedDuck = duckRepository.save(duckInDb);
+		
+		return updatedDuck;
 	}
 	
-	public void deleteDuck(int id) {
-
+	public void deleteDuck(Integer id) {
+		if (!duckRepository.existsById(id)) {
+			throw new EntityNotFoundException("Duck does not exist to delete... QUACK!");
+		}
+		duckRepository.deleteById(id);
 	}
 	
 }
