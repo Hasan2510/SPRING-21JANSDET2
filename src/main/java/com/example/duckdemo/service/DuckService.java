@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.duckdemo.data.model.Duck;
 import com.example.duckdemo.data.repository.DuckRepository;
+import com.example.duckdemo.dto.DuckDTO;
 import com.example.duckdemo.exceptions.DuckNotFoundException;
+import com.example.duckdemo.mappers.DuckMapper;
 
 @Service // labelled as a bean (managed by Spring)
 public class DuckService {
@@ -20,40 +22,54 @@ public class DuckService {
 	// Data Access Object
 	private DuckRepository duckRepository;
 	
+	private DuckMapper duckMapper;
+	
 	@Autowired
-	public DuckService(DuckRepository duckRepository) {
+	public DuckService(DuckRepository duckRepository, DuckMapper duckMapper) {
 		this.duckRepository = duckRepository;
+		this.duckMapper = duckMapper;
 	}
 
-	public List<Duck> readAllDucks() {
+	public List<DuckDTO> readAllDucks() {
 		List<Duck> ducks = duckRepository.findAll();
-		return ducks;
+		List<DuckDTO> duckDTOs = new ArrayList<DuckDTO>();
+		
+		ducks.forEach(duck -> duckDTOs.add(duckMapper.mapToDTO(duck)));
+		
+		return duckDTOs;
 	}
 	
-	public Duck readById(Integer id) {
+	public DuckDTO readById(Integer id) {
 		Optional<Duck> duck = duckRepository.findById(id);
 		
 		if (duck.isPresent()) {
-			return duck.get();
+			return duckMapper.mapToDTO(duck.get());
 		} else {
 			throw new DuckNotFoundException("Duck is not here, QUACK!");
 		}
 	}
 	
-	public Duck readByName(String name) {
+	public DuckDTO readByName(String name) {
 		Duck duck = duckRepository.getDuckByNameJPQL(name);
 		
-		return duck;
+		return duckMapper.mapToDTO(duck);
 	}
 	
-	public Duck createDuck(Duck duck) {
+	public DuckDTO createDuck(Duck duck) {
 		Duck newDuck = duckRepository.save(duck);
 		
-		return newDuck;
+		return duckMapper.mapToDTO(newDuck);
 	}
 	
-	public Duck updateDuck(Integer id, Duck duck) throws EntityNotFoundException {
-		Duck duckInDb = readById(id);
+	public DuckDTO updateDuck(Integer id, Duck duck) throws EntityNotFoundException {
+		Optional<Duck> duckInDbOpt = duckRepository.findById(id);
+		Duck duckInDb;
+		
+		if (duckInDbOpt.isPresent()) {
+			duckInDb = duckInDbOpt.get();
+		} else {
+			throw new DuckNotFoundException("Duck is not here, QUACK!");
+		}
 		
 		duckInDb.setName(duck.getName());
 		duckInDb.setAge(duck.getAge());
@@ -62,7 +78,7 @@ public class DuckService {
 		
 		Duck updatedDuck = duckRepository.save(duckInDb);
 		
-		return updatedDuck;
+		return duckMapper.mapToDTO(updatedDuck);
 	}
 	
 	public void deleteDuck(Integer id) {
