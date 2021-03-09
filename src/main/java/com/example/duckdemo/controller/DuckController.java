@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.duckdemo.data.model.Duck;
+import com.example.duckdemo.dto.DuckDTO;
 import com.example.duckdemo.service.DuckService;
 
 @RestController
@@ -43,50 +44,50 @@ public class DuckController {
 	
 	// localhost:8080/duck
 	@GetMapping
-	public ResponseEntity<List<Duck>> getAllDucks() {
+	public ResponseEntity<List<DuckDTO>> getAllDucks() {
 		
 		// Response has headers, a body and a status code
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Location", "1442");
 		
-		List<Duck> data = duckService.readAllDucks();
+		List<DuckDTO> data = duckService.readAllDucks();
 		
 		// ResponseEntity(Body, Headers, HttpStatus)
-		return new ResponseEntity<List<Duck>>(data, httpHeaders, HttpStatus.OK);
+		return new ResponseEntity<List<DuckDTO>>(data, httpHeaders, HttpStatus.OK);
 	}
 	
 	// localhost:8080/duck/3
 	@GetMapping("/{id}")
-	public ResponseEntity<Duck> getDuckById(@PathVariable("id") int id) throws Exception {
-		Duck duck = duckService.readById(id);
+	public ResponseEntity<DuckDTO> getDuckById(@PathVariable("id") int id) throws Exception {
+		DuckDTO duck = duckService.readById(id);
 		
-		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
+		return new ResponseEntity<DuckDTO>(duck, HttpStatus.OK);
 	}
 	
 	// localhost:8080/duck/alt?id=1
 	@GetMapping("/alt")
-	public ResponseEntity<Duck> getDuckByIdAlt(@PathParam("id") int id) throws Exception {
-		Duck duck = duckService.readById(id);
+	public ResponseEntity<DuckDTO> getDuckByIdAlt(@PathParam("id") int id) throws Exception {
+		DuckDTO duck = duckService.readById(id);
 		
-		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
+		return new ResponseEntity<DuckDTO>(duck, HttpStatus.OK);
 	}
 	
 	@PostMapping
-	public ResponseEntity<Duck> createDuck(@RequestBody Duck duck) {
-		Duck newDuck = duckService.createDuck(duck);
+	public ResponseEntity<DuckDTO> createDuck(@RequestBody Duck duck) {
+		DuckDTO newDuck = duckService.createDuck(duck);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Location", String.valueOf(newDuck.getId()));
 	
-		return new ResponseEntity<Duck>(duck, headers, HttpStatus.CREATED);
+		return new ResponseEntity<DuckDTO>(newDuck, headers, HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Duck> updateDuck(@PathVariable("id") int id,
-										   @RequestBody Duck duck) {
-		Duck updatedDuck = duckService.updateDuck(id, duck);
+	public ResponseEntity<DuckDTO> updateDuck(@PathVariable("id") int id,
+										      @RequestBody Duck duck) {
+		DuckDTO updatedDuck = duckService.updateDuck(id, duck);
 		
-		return new ResponseEntity<Duck>(updatedDuck, HttpStatus.OK);
+		return new ResponseEntity<DuckDTO>(updatedDuck, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")

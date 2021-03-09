@@ -7,11 +7,15 @@ import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.duckdemo.data.model.Duck;
 import com.example.duckdemo.data.repository.DuckRepository;
+import com.example.duckdemo.dto.DuckDTO;
+import com.example.duckdemo.mappers.DuckMapper;
 
 @Service // labelled as a bean (managed by Spring)
 public class DuckService {
@@ -19,35 +23,39 @@ public class DuckService {
 	// Data Access Object
 	private DuckRepository duckRepository;
 	
+	private DuckMapper duckMapper;
+	
 	@Autowired
-	public DuckService(DuckRepository duckRepository) {
+	public DuckService(DuckRepository duckRepository, DuckMapper duckMapper) {
 		this.duckRepository = duckRepository;
+		this.duckMapper = duckMapper;
 	}
 
-	public List<Duck> readAllDucks() {
+	public List<DuckDTO> readAllDucks() {
 		List<Duck> ducks = duckRepository.findAll();
-		return ducks;
-	}
-	
-	public Duck readById(Integer id) throws EntityNotFoundException {
-		Optional<Duck> duck = duckRepository.findById(id);
+		List<DuckDTO> returnables = new ArrayList<DuckDTO>();
 		
-		if (duck.isPresent()) {
-			return duck.get();
-		} else {
-			throw new EntityNotFoundException("Duck not found");
-		}
+		ducks.forEach(duck -> returnables.add(duckMapper.mapToDTO(duck)));
+		return returnables;
 	}
 	
-	public Duck createDuck(Duck duck) {
+	public DuckDTO readById(Integer id) {
+		Duck duck = duckRepository.findById(id).orElseThrow(() -> {
+			return new ResponseStatusException(HttpStatus.NOT_FOUND, "Duck not found! Quackity, quack...");
+		});
+		
+		return duckMapper.mapToDTO(duck);
+	}
+	
+	public DuckDTO createDuck(Duck duck) {
 		Duck newDuck = duckRepository.save(duck);
 		
-		return newDuck;
+		return duckMapper.mapToDTO(newDuck);
 	}
 	
-	public Duck updateDuck(Integer id, Duck duck) throws EntityNotFoundException {
-		Duck duckInDb = readById(id);
-		
+	public DuckDTO updateDuck(Integer id, Duck duck) {
+		Duck duckInDb = duckRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+				
 		duckInDb.setName(duck.getName());
 		duckInDb.setAge(duck.getAge());
 		duckInDb.setHabitat(duck.getHabitat());
@@ -55,7 +63,7 @@ public class DuckService {
 		
 		Duck updatedDuck = duckRepository.save(duckInDb);
 		
-		return updatedDuck;
+		return duckMapper.mapToDTO(updatedDuck);
 	}
 	
 	public void deleteDuck(Integer id) {
