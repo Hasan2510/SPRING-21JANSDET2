@@ -71,6 +71,14 @@ public class DuckController {
 		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
 	}
 	
+	// localhost:8080/duck/name/fred
+	@GetMapping("/name/{name}")
+	public ResponseEntity<Duck> getDuckByName(@PathVariable("name") String name) {
+		Duck duck = duckService.readByName(name);
+		
+		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
+	}
+	
 	@PostMapping
 	public ResponseEntity<Duck> createDuck(@RequestBody Duck duck) {
 		Duck newDuck = duckService.createDuck(duck);

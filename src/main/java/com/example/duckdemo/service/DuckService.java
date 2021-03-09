@@ -40,6 +40,12 @@ public class DuckService {
 		}
 	}
 	
+	public Duck readByName(String name) {
+		Duck duck = duckRepository.getDuckByNameJPQL(name);
+		
+		return duck;
+	}
+	
 	public Duck createDuck(Duck duck) {
 		Duck newDuck = duckRepository.save(duck);
 		

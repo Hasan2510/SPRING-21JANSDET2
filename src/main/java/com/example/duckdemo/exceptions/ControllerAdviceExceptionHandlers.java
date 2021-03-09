@@ -16,7 +16,9 @@ public class ControllerAdviceExceptionHandlers {
 	// Specifies the following method is for handling the specified exception
 	@ExceptionHandler(value = DuckNotFoundException.class)
 	public ResponseEntity<String> duckNotFoundExceptionHandler(DuckNotFoundException dnfe) {
+		
 		// Spring automatically passes the exception to our method parameter
+		
 		return new ResponseEntity<String>(dnfe.getMessage(), HttpStatus.NOT_FOUND);
 	}
 }
