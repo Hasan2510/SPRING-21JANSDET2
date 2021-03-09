@@ -57,7 +57,7 @@ public class DuckController {
 	
 	// localhost:8080/duck/3
 	@GetMapping("/{id}")
-	public ResponseEntity<Duck> getDuckById(@PathVariable("id") int id) throws Exception {
+	public ResponseEntity<Duck> getDuckById(@PathVariable("id") int id) {
 		Duck duck = duckService.readById(id);
 		
 		return new ResponseEntity<Duck>(duck, HttpStatus.OK);
@@ -65,7 +65,7 @@ public class DuckController {
 	
 	// localhost:8080/duck/alt?id=1
 	@GetMapping("/alt")
-	public ResponseEntity<Duck> getDuckByIdAlt(@PathParam("id") int id) throws Exception {
+	public ResponseEntity<Duck> getDuckByIdAlt(@PathParam("id") int id) {
 		Duck duck = duckService.readById(id);
 		
 		return new ResponseEntity<Duck>(duck, HttpStatus.OK);

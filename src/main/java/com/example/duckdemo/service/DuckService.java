@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.duckdemo.data.model.Duck;
 import com.example.duckdemo.data.repository.DuckRepository;
+import com.example.duckdemo.exceptions.DuckNotFoundException;
 
 @Service // labelled as a bean (managed by Spring)
 public class DuckService {
@@ -29,13 +30,13 @@ public class DuckService {
 		return ducks;
 	}
 	
-	public Duck readById(Integer id) throws EntityNotFoundException {
+	public Duck readById(Integer id) {
 		Optional<Duck> duck = duckRepository.findById(id);
 		
 		if (duck.isPresent()) {
 			return duck.get();
 		} else {
-			throw new EntityNotFoundException("Duck not found");
+			throw new DuckNotFoundException("Duck is not here, QUACK!");
 		}
 	}
 	
@@ -60,7 +61,7 @@ public class DuckService {
 	
 	public void deleteDuck(Integer id) {
 		if (!duckRepository.existsById(id)) {
-			throw new EntityNotFoundException("Duck does not exist to delete... QUACK!");
+			throw new DuckNotFoundException();
 		}
 		duckRepository.deleteById(id);
 	}
