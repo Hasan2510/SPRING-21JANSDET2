@@ -7,9 +7,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,5 +65,24 @@ public class DuckServiceUnitTest {
 		// Verify that our methods on our mock objects were called
 		verify(duckRepository, times(1)).findAll();
 		verify(duckMapper, times(1)).mapToDTO(validDuck);
+	}
+	
+	@Test
+	public void updateDuckTest() {
+		Duck updatedDuck = new Duck(3, "fred", "red", "beach", 6);
+		DuckDTO updatedDuckDTO = new DuckDTO(3, "fred", "red", "beach");
+		
+		when(duckRepository.findById(Mockito.any(Integer.class)))
+			.thenReturn(Optional.of(validDuck));
+		
+		when(duckRepository.save(Mockito.any(Duck.class)))
+			.thenReturn(updatedDuck);
+		
+		when(duckMapper.mapToDTO(Mockito.any(Duck.class)))
+			.thenReturn(updatedDuckDTO);
+		
+		DuckDTO toTestDTO = duckService.updateDuck(validDuck.getId(), updatedDuck);
+		
+		assertThat(updatedDuckDTO).isEqualTo(toTestDTO);
 	}
 }

@@ -1,6 +1,7 @@
 package com.example.duckdemo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +28,9 @@ import com.example.duckdemo.data.model.Duck;
 import com.example.duckdemo.dto.DuckDTO;
 import com.example.duckdemo.service.DuckService;
 
+// This is RestController, it will send back data in an http response body
 @RestController
-//@Controller // Returns a view unless @ResponseBody is specified
-//@ResponseBody
-@RequestMapping(path = "/duck")
+@RequestMapping(path = "/duck") // This controller has a base path of /duck (localhost:8080/duck)
 public class DuckController {
 
 	// localhost:8080/
@@ -38,7 +39,7 @@ public class DuckController {
 //	@Autowired // field injection
 	private DuckService duckService;
 	
-	@Autowired // constructor injection
+	@Autowired // constructor injection (injected from the application context)
 	public DuckController(DuckService duckService) {
 		this.duckService = duckService;
 	}
@@ -48,26 +49,40 @@ public class DuckController {
 	public ResponseEntity<List<DuckDTO>> getAllDucks() {
 		
 		// Response has headers, a body and a status code
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add("Location", "1442");
+		HttpHeaders httpHeaders = new HttpHeaders(); // Creating some headers
+		httpHeaders.add("Location", "1442"); // Adding a header
 		
+		// Requesting our DuckDTO data from the duckService
 		List<DuckDTO> data = duckService.readAllDucks();
 		
-		// ResponseEntity(Body, Headers, HttpStatus)
+		// returning a response of type ResponseEntity(Body, Headers, HttpStatus)
 		return new ResponseEntity<List<DuckDTO>>(data, httpHeaders, HttpStatus.OK);
 	}
 	
 	// localhost:8080/duck/3
-	@GetMapping("/{id}")
+	@GetMapping("/{id}") // {id} is a path variable
 	public ResponseEntity<DuckDTO> getDuckById(@PathVariable("id") int id) {
+		// The path variable is captured by the @PathVariable annotation
+		// - WE MUST SUPPLY A MATCHING NAME WITHIN THE PARENTHESIS
+		// - WE MUST SUPPLY AN APPROPRIATE DATA TYPE FOR THE VAR TO CONVERT TO
+		
+		// Get our duck data using the service
 		DuckDTO duck = duckService.readById(id);
 		
+		// Return the duck data in a response
 		return new ResponseEntity<DuckDTO>(duck, HttpStatus.OK);
 	}
 	
+	// Spring Boots version of @PathParam is @RequestParam(defaultValue = "")
 	// localhost:8080/duck/alt?id=1
 	@GetMapping("/alt")
-	public ResponseEntity<DuckDTO> getDuckByIdAlt(@PathParam("id") int id) {
+	public ResponseEntity<DuckDTO> getDuckByIdAlt(@RequestParam("id") int id) {
+		// @RequestParam grabs a query parameter from our path
+		// - In this case, it is called `id` and MUST BE SUPPLIED
+		// - We can make it optional like so: @RequestParam(name = "id", required = false)
+		//   - Or @RequestParam(name = "id", defaultValue = "")
+		
+		
 		DuckDTO duck = duckService.readById(id);
 		
 		return new ResponseEntity<DuckDTO>(duck, HttpStatus.OK);
@@ -83,6 +98,10 @@ public class DuckController {
 	
 	@PostMapping
 	public ResponseEntity<DuckDTO> createDuck(@Valid @RequestBody Duck duck) {
+		// A Duck is retrieved from the incoming request body (the conversion from json to duck is automatic)
+		// - `@RequestBody Duck duck` makes this happen
+		// - @Valid is used to employ our models validation on the incoming request
+		
 		DuckDTO newDuck = duckService.createDuck(duck);
 		
 		HttpHeaders headers = new HttpHeaders();

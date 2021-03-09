@@ -11,18 +11,23 @@ import org.springframework.context.annotation.Scope;
 @SpringBootApplication
 public class DuckDemoApplication {
 
+	// The applications entry point
 	public static void main(String[] args) {
+		// Getting the ApplicationContext
 		ApplicationContext context = SpringApplication.run(DuckDemoApplication.class, args);
 		
+		// Getting some beans from the application context
 		LocalTime time = context.getBean("localTime", LocalTime.class);
 		LocalTime time2 = context.getBean("localTime", LocalTime.class);
+		
+		// Logging and comparing the beans for equality
 		System.out.println(time);
 		System.out.println(time2);
 		System.out.println(time.equals(time2));
 	}
 
 	@Bean // Indicates this is a bean, controlled by Spring (added to the app context)
-	@Scope("singleton")
+	@Scope("singleton") // This bean is only created once, and then reused whenever requested
 	public static LocalTime localTime() {
 		return LocalTime.now();
 	}

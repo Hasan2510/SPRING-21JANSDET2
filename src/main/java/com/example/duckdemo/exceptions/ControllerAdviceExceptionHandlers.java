@@ -6,7 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-// Indicates @ExceptionHandler, @InitBinder, or @ModelAttribute have been used on the methods
+// @ControllerAdvice Indicates @ExceptionHandler, @InitBinder, or @ModelAttribute have been used on the methods
 // inside this class. We are focused on @ExceptionHandler
 //
 // Applies to all registered controller beans

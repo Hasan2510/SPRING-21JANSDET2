@@ -1,6 +1,7 @@
 package com.example.duckdemo.dto;
 
 // Simple POJO (Plain Old Java Object)
+// - DTO is the Data Transfer Object that represents a sanitised version of our business domain model
 public class DuckDTO {
 
 	private int id;

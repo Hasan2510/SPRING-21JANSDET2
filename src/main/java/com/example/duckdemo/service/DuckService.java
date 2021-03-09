@@ -81,11 +81,15 @@ public class DuckService {
 		return duckMapper.mapToDTO(updatedDuck);
 	}
 	
-	public void deleteDuck(Integer id) {
+	public boolean deleteDuck(Integer id) {
 		if (!duckRepository.existsById(id)) {
 			throw new DuckNotFoundException();
 		}
 		duckRepository.deleteById(id);
+		
+		boolean exists = duckRepository.existsById(id);
+		
+		return !exists;
 	}
 	
 }
