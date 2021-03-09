@@ -62,7 +62,7 @@ A Spring Bean is simply a managed object, managed by Spring that is... This is c
 We can register a bean in multiple ways, the simplest is to create a configuration class that holds our bean definitions:
 
 ```
-@Configuration // Registers the class as a bean, this is a specialised bean that is used for providing beans from our bean definitions
+@Configuration // Registers the class as a bean, this is a specialised bean that is used for providing beans from our bean definitions (methods in this class)
 public class Config {
 
   @Bean // Registers a method as a bean here
@@ -74,6 +74,8 @@ public class Config {
 ```
 
 As the configuration class is registered to Spring with `@Configuration`, it will be scanned during the component scan (other beans will be picked up as when correctly annotated) that occurs when your Spring Boot app is bootstrapping itself.
+
+We can also apply `@Component` to a class to indicate it should be registered as a bean, but not for supplying bean definitions. Instead, it is used for beans that provide behaviour through their methods. We also have specialisations of this annotation such as `@Service` or `@Repository`.
 
 ## What is @SpringBootApp
 
@@ -117,6 +119,29 @@ spring.profiles.active=test
 ```
 
 The `spring.profiles.active` property has been set to `test`, this means it will select the property file called `application-test.properties`.
+
+## Dependency Injection
+
+Spring is an Inversion of Control container, and it manages beans in the application context. We know we can register those beans, but how can we retrieve them (have the dependency injected). We can trigger dependency injection in Spring apps with the `@Autowired` annotation:
+
+```
+@Service
+public class SomeService {
+
+}
+
+@RestController
+public class SomeController {
+
+  // We could use @Autowired here as well, this would then be field injection
+  private SomeService someService;
+  
+  @Autowired // Using constructor injection to request the `SomeService` Service bean from the application context when creating this object
+  public SomeController(SomeService someService) {
+    this.someService = someService;
+  }
+}
+```
 
 ## What is a Controller
 
