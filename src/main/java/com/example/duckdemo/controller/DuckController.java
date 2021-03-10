@@ -119,10 +119,8 @@ public class DuckController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteDuck(@PathVariable("id") int id) {
-		duckService.deleteDuck(id);
-		
-		return new ResponseEntity<String>("Duck deleted", HttpStatus.OK);
+	public ResponseEntity<Boolean> deleteDuck(@PathVariable("id") int id) {		
+		return new ResponseEntity<Boolean>(duckService.deleteDuck(id), HttpStatus.OK);
 	}
 	
 	// @GetMapping (retrieving something)

@@ -35,7 +35,7 @@ public class DuckService {
 		List<DuckDTO> duckDTOs = new ArrayList<DuckDTO>();
 		
 		ducks.forEach(duck -> duckDTOs.add(duckMapper.mapToDTO(duck)));
-		
+
 		return duckDTOs;
 	}
 	

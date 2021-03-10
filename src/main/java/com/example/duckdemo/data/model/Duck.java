@@ -107,6 +107,8 @@ public class Duck {
 		return result;
 	}
 
+	// Equals method is VERY IMPORTANT for testing
+	// - this override compares the content rather than the object reference
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -137,5 +139,7 @@ public class Duck {
 			return false;
 		return true;
 	}
+	
+	
 	
 }
