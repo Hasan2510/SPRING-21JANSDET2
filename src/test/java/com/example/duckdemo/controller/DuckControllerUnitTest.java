@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,5 +64,20 @@ public class DuckControllerUnitTest {
 		assertThat(response).isEqualTo(duckController.getAllDucks());
 		
 		verify(duckService, times(1)).readAllDucks();
+	}
+	
+	@Test
+	public void createDuckTest() {
+		when(duckService.createDuck(Mockito.any(Duck.class))).thenReturn(validDuckDTO);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Location", String.valueOf(validDuckDTO.getId()));
+		
+		ResponseEntity<DuckDTO> response = 
+				new ResponseEntity<DuckDTO>(validDuckDTO, headers, HttpStatus.CREATED);
+		
+		assertThat(response).isEqualTo(duckController.createDuck(validDuck));
+		
+		verify(duckService, times(1)).createDuck(Mockito.any(Duck.class));
 	}
 }
