@@ -1,10 +1,15 @@
 package com.example.duckdemo.data.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -12,27 +17,37 @@ import javax.validation.constraints.NotNull;
 // Duck is our Business Domain
 
 @Entity // JPA + Hibernate will auto-create table for this class
+@Table(name = "duck") // maps the entity to a specified table name
 public class Duck {
 
 	// Validation Rules specify what can and can't be processed in our DB
 	
 	@Id // Auto-incrementing
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "duck_id")
 	private int id;
 	
-	@Column(name = "name", unique = true)
 	@NotNull
+	@Column(name = "name", unique = true)
 	private String name;
 	
 	@NotNull
+	@Column(name = "colour")
 	private String colour;
 	
 	@NotNull
+	@Column(name = "habitat")
 	private String habitat;
 	
 	@Min(0)
 	@Max(36)
 	private int age;
+	
+	// many-to-one relationship | DUCK OWNS IT!!! DUCKY CAN CHANGE PONDS!!!
+	// - The duck table will be given a foreign key column called pond_id
+	@ManyToOne(targetEntity = Pond.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "fk_pond_id") // the Duck entity is the owner of the relationship
+	private Pond pond;
 	
 	public Duck() {
 		
@@ -93,6 +108,14 @@ public class Duck {
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public Pond getPond() {
+		return pond;
+	}
+
+	public void setPond(Pond pond) {
+		this.pond = pond;
 	}
 
 	@Override
