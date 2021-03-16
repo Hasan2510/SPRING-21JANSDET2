@@ -1,0 +1,27 @@
+package com.example.duckdemo.mappers;
+
+import com.example.duckdemo.data.model.Duck;
+import com.example.duckdemo.dto.DuckDTO;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DuckMapper {
+
+    private ModelMapper modelMapper;
+
+    @Autowired
+    public DuckMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    public DuckDTO mapToDTO(Duck duck) {
+        return this.modelMapper.map(duck, DuckDTO.class);
+    }
+
+    public Duck mapToDuck(DuckDTO duckDTO) {
+        return this.modelMapper.map(duckDTO, Duck.class);
+    }
+}
